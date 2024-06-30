@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Job Instances</title>
+</head>
+<body>
+    <h1>Job Instances</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Instance ID</th>
+                <th>Job Name</th>
+                <th>Execution ID</th>
+                <th>Job Parameters</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="execution : ${jobExecutions}">
+                <td th:text="${execution.jobInstance.instanceId}"></td>
+                <td th:text="${execution.jobInstance.jobName}"></td>
+                <td th:text="${execution.id}"></td>
+                <td th:text="${execution.jobParameters.parameters}"></td>
+                <td th:text="${execution.status}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

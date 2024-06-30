@@ -1,0 +1,8 @@
+ALTER TABLE video
+ADD COLUMN thumbnail_url VARCHAR(512);
+
+ALTER TABLE video
+ADD COLUMN length VARCHAR(16);
+
+ALTER TABLE video
+ADD COLUMN length_sec INT;

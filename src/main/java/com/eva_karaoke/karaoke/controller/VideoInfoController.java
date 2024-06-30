@@ -18,45 +18,45 @@ import com.eva_karaoke.karaoke.service.VideoInfoService;
 @RequestMapping("/video-infos")
 public class VideoInfoController {
 
-    @Autowired
-    private VideoInfoService videoInfoService;
+  @Autowired
+  private VideoInfoService videoInfoService;
 
-    @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter streamSseMvc(@RequestParam String url) {
-      VideoInfo videoInfo = new VideoInfo(url);
+  @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+  public SseEmitter streamSseMvc(@RequestParam String url) {
+    VideoInfo videoInfo = new VideoInfo(url);
 
-      SseEmitter emitter = new SseEmitter();
+    SseEmitter emitter = new SseEmitter();
 
-      try {
-        emitter.send(videoInfo);
-      } catch (IOException e) {
-          emitter.completeWithError(e);
-          return emitter;
-      }
-
-      CompletableFuture<VideoInfo> future = videoInfoService.getVideoInfo(videoInfo);
-
-      future.thenAccept(updatedVideoInfo -> {
-          try {
-              emitter.send(updatedVideoInfo);
-
-              if(!updatedVideoInfo.getStatus().equals(VideoInfo.STATUS_PROGRESS)) {
-                emitter.complete();
-              }
-
-          } catch (IOException e) {
-              emitter.completeWithError(e);
-          }
-      }).exceptionally(ex -> {
-          try {
-              emitter.send("Error: " + ex.getMessage());
-              emitter.completeWithError(ex);
-          } catch (IOException e) {
-              e.printStackTrace();
-          }
-          return null;
-      });
-
+    try {
+      emitter.send(videoInfo);
+    } catch (IOException e) {
+      emitter.completeWithError(e);
       return emitter;
     }
+
+    CompletableFuture<VideoInfo> future = videoInfoService.getVideoInfo(videoInfo);
+
+    future.thenAccept(updatedVideoInfo -> {
+      try {
+        emitter.send(updatedVideoInfo);
+
+        if (!updatedVideoInfo.getStatus().equals(VideoInfo.STATUS_PROGRESS)) {
+          emitter.complete();
+        }
+
+      } catch (IOException e) {
+        emitter.completeWithError(e);
+      }
+    }).exceptionally(ex -> {
+      try {
+        emitter.send("Error: " + ex.getMessage());
+        emitter.completeWithError(ex);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      return null;
+    });
+
+    return emitter;
+  }
 }
