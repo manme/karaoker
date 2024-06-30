@@ -1,6 +1,5 @@
 package com.eva_karaoke.karaoke.service;
 
-import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Batch Jobs</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        function deleteJobInstance(jobInstanceId) {
+            $.ajax({
+                url: '/jobs/' + jobInstanceId,
+                type: 'DELETE',
+                success: function(result) {
+                    alert(result);
+                    location.reload();
+                },
+                error: function(error) {
+                    alert('Error: ' + error.responseText);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>Batch Jobs</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Job Name</th>
+                <th>Instance ID</th>
+                <th>Details</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="jobInstance : ${jobInstances}">
+                <td th:text="${jobInstance.jobName}"></td>
+                <td th:text="${jobInstance.instanceId}"></td>
+                <td>
+                    <a th:href="@{/jobs/{jobName}(jobName=${jobInstance.jobName})}">View Executions</a>
+                </td>
+                <td>
+                    <button th:attr="onclick='deleteJobInstance(' + ${jobInstance.instanceId} + ')'">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

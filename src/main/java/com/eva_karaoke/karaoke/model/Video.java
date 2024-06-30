@@ -14,27 +14,31 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class Video {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String url;
-	private String errorMessage;
-	private int retries;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  private String url;
+  private String errorMessage;
+  private int retries;
+  private String title;
+  private String thumbnailUrl;
+  private int lengthSec;
+  private String length;
 
-	@Enumerated(EnumType.STRING)
-	private VideoProgressStatus progressStatus;
+  @Enumerated(EnumType.STRING)
+  private VideoProgressStatus progressStatus;
 
-	@Enumerated(EnumType.STRING)
-	private VideoStatus status;
+  @Enumerated(EnumType.STRING)
+  private VideoStatus status;
 
-	@Transient
-	private int ProgressStepValue = 0;
+  @Transient
+  private int ProgressStepValue = 0;
 
-	public static final String SPLEETER_VOCALS_FILENAME = "vocals.wav";
-	public static final String SPLEETER_ACCOMPANIMENT_FILENAME = "accompaniment.wav";
+  public static final String SPLEETER_VOCALS_FILENAME = "vocals.wav";
+  public static final String SPLEETER_ACCOMPANIMENT_FILENAME = "accompaniment.wav";
 
-	public void setPause() {
-		switch (getStatus()) {
+  public void setPause() {
+    switch (getStatus()) {
       case null:
       case STATUS_VIDEO_DOWNLOADING:
         setStatus(VideoStatus.STATUS_VIDEO_DOWNLOAD_FAILED);
@@ -45,53 +49,68 @@ public class Video {
       case STATUS_AUDIO_SEPARATING:
         setStatus(VideoStatus.STATUS_AUDIO_SEPARATION_FAILED);
         break;
-      default: 
+      default:
         break;
     }
-		setProgressStatus(VideoProgressStatus.STATUS_PAUSED);
-	}
+    setProgressStatus(VideoProgressStatus.STATUS_PAUSED);
+  }
 
-	public String getFolder() {
-		return "./ProcessFiles/Video_" + id.toString(); 
-	}
+  public String getFolder() {
+    return "./ProcessFiles/Video_" + id.toString();
+  }
 
-	public String getPathVideoFile() {
-		return getFolder() + "/video." + getVideoFileExt() ;
-	}
+  public String getPathVideoFile() {
+    return getFolder() + "/video." + getVideoFileExt();
+  }
 
-	public String getVideoFileExt() {
-		return "mp4";
-	}
+  public String getVideoFileExt() {
+    return "mp4";
+  }
 
-	public String getPathAudioFile() {
-		return getFolder() + "/audio." + getAudioFileExt();
-	}
+  public String getPathAudioFile() {
+    return getFolder() + "/audio." + getAudioFileExt();
+  }
 
-	public String getAudioFileExt() {
-		return "mp3";
-	}
+  public String getAudioFileExt() {
+    return "mp3";
+  }
 
-	public String getPathSpleeterFolder() {
-		return getFolder() + "/spleeter_output";
-	}
+  public String getPathSpleeterFolder() {
+    return getFolder() + "/spleeter_output";
+  }
 
-	public String getPathVocalFile() {
-		return getPathSpleeterFolder() + "/" + SPLEETER_VOCALS_FILENAME;
-	}
+  public String getPathVocalFile() {
+    return getPathSpleeterFolder() + "/" + SPLEETER_VOCALS_FILENAME;
+  }
 
-	public String getPathAccompanimentFile() {
-		return getPathSpleeterFolder() + "/" + SPLEETER_ACCOMPANIMENT_FILENAME;
-	}
+  public String getPathAccompanimentFile() {
+    return getPathSpleeterFolder() + "/" + SPLEETER_ACCOMPANIMENT_FILENAME;
+  }
 
-	public int getProgressStepValue() {
-		if (this.progressStatus == VideoProgressStatus.STATUS_COMPLETED) {
-			return 100;
-		} 
+  public int getProgressStepValue() {
+    if (this.progressStatus == VideoProgressStatus.STATUS_COMPLETED) {
+      return 100;
+    }
 
-		if (this.progressStatus.equals(VideoProgressStatus.STATUS_QUEUED) || this.progressStatus.equals(VideoProgressStatus.STATUS_PAUSED)) {
-			return 0;
-		} 
+    if (this.progressStatus.equals(VideoProgressStatus.STATUS_QUEUED)
+        || this.progressStatus.equals(VideoProgressStatus.STATUS_PAUSED)) {
+      return 0;
+    }
 
-		return this.ProgressStepValue; 
-	}
+    return this.ProgressStepValue;
+  }
+
+  public void setLength(String length) {
+    this.length = length;
+    this.lengthSec = convertToSeconds(length);
+  }
+
+  int convertToSeconds(String length) { // Changed visibility to package-private
+    String[] parts = length.split(":");
+    int seconds = 0;
+    for (String part : parts) {
+      seconds = seconds * 60 + Integer.parseInt(part);
+    }
+    return seconds;
+  }
 }

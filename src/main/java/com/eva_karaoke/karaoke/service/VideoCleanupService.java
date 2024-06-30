@@ -13,20 +13,20 @@ import java.nio.file.Paths;
 
 @Service
 public class VideoCleanupService {
-    @Autowired
-    private VideoRepository videoRepository;
+  @Autowired
+  private VideoRepository videoRepository;
 
-    @Async
-    public void cleanupVideo(Long videoId) {
-        String videoDir = "./ProcessFiles/Video_" + videoId;
-        try {
-            Files.walk(Paths.get(videoDir))
-                .map(Path::toFile)
-                .forEach(File::delete);
-            Files.deleteIfExists(Paths.get(videoDir));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        videoRepository.deleteById(videoId);
+  @Async
+  public void cleanupVideo(Long videoId) {
+    String videoDir = "./ProcessFiles/Video_" + videoId;
+    try {
+      Files.walk(Paths.get(videoDir))
+          .map(Path::toFile)
+          .forEach(File::delete);
+      Files.deleteIfExists(Paths.get(videoDir));
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+    videoRepository.deleteById(videoId);
+  }
 }

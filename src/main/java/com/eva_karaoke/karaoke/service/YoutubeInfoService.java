@@ -15,13 +15,14 @@ public class YoutubeInfoService implements VideoInfoFetcher {
 
   @Override
   public CompletableFuture<VideoInfo> getVideoInfo(VideoInfo videoInfo) {
-    return CompletableFuture.supplyAsync(() -> getVideoInfoSync(videoInfo) );
+    return CompletableFuture.supplyAsync(() -> getVideoInfoSync(videoInfo));
   }
 
   private VideoInfo getVideoInfoSync(VideoInfo videoInfo) {
 
     try {
-      ProcessBuilder processBuilder = new ProcessBuilder("youtube-dl", "--get-title", "--get-duration", "--get-thumbnail", videoInfo.getUrl());
+      ProcessBuilder processBuilder = new ProcessBuilder("youtube-dl", "--get-title", "--get-duration",
+          "--get-thumbnail", videoInfo.getUrl());
       processBuilder.redirectErrorStream(true);
 
       Process process = processBuilder.start();
@@ -30,17 +31,17 @@ public class YoutubeInfoService implements VideoInfoFetcher {
       try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
         // Filter out warning messages
         String output = reader.lines()
-                              .filter(line -> !line.startsWith("WARNING:"))
-                              .collect(Collectors.joining("\n"));
+            .filter(line -> !line.startsWith("WARNING:"))
+            .collect(Collectors.joining("\n"));
         process.waitFor();
 
         String[] info = output.split("\n");
-        
+
         if (info.length >= 3) {
-            videoInfo.setTitle(info[0]);
-            videoInfo.setThumbnailUrl(info[1]);
-            videoInfo.setLength(info[2]);
-            videoInfo.setStatus(VideoInfo.STATUS_COMPLETED);
+          videoInfo.setTitle(info[0]);
+          videoInfo.setThumbnailUrl(info[1]);
+          videoInfo.setLength(info[2]);
+          videoInfo.setStatus(VideoInfo.STATUS_COMPLETED);
         } else {
           System.out.println("getVideoInfoSync Info: " + info);
           videoInfo.setError("Failed to fetch video information");
